@@ -36,3 +36,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### JS ###
+frontend/
+target/
+/src/main/dev-bundle
