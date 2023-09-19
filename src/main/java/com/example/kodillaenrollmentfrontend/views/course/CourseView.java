@@ -1,5 +1,11 @@
 package com.example.kodillaenrollmentfrontend.views.course;
 
+import com.example.kodillaenrollmentfrontend.dao.apiclient.CourseApiClient;
+import com.example.kodillaenrollmentfrontend.dao.apiclient.TeacherApiClient;
+import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
+import com.example.kodillaenrollmentfrontend.dao.dto.TeacherDto;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -12,14 +18,27 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.router.Route;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 
-@Route("course")
-public class CourseView extends VerticalLayout {
+import java.time.DayOfWeek;
+
+@Route("course-details/:id")
+public class CourseView extends VerticalLayout{
+
+    private CourseDto courseDto;
+
+    @Autowired
+    private CourseApiClient courseApiClient;
+
+    @Autowired
+    private TeacherApiClient teacherApiClient;
 
     FormLayout courseForm = new FormLayout();
 
-    //    @Autowired
-//    private CourseApiClient courseApiClient;
+    ComboBox<DayOfWeek> day = new ComboBox<>("Day");
+    ComboBox<TeacherDto> assignedTeacher1 = new ComboBox<>("Teacher1");
+    ComboBox<TeacherDto> assignedTeacher2 = new ComboBox<>("Teacher2");
 
 
     public CourseView() {
@@ -53,11 +72,13 @@ public class CourseView extends VerticalLayout {
         Button delete = new Button("Delete");
         Button payments = new Button("Show payment list");
         Button addStudent = new Button("Add Student");
-        Button export = new Button("Export to Google Sheets");
+        addStudent.addClickListener(event -> {
+            UI.getCurrent().getPage().setLocation("/course_edit");
+        });
+        Button export = new Button("Export to Google Sheets"); //todo
         functions.add(edit, delete, create, payments, addStudent, export);
 
 
-//        grid.setColumns("title", "assignedTeachers", "startingDate", "endDate", "pricePerMonth", "description", "duration", "day", "time");
         HorizontalLayout mainContent = new HorizontalLayout(courseForm);
         mainContent.setSizeFull();
         courseForm.add(title, startingDate, endDate, assignedTeacher1, assignedTeacher2, pricePerMonth, day, time, duration, description);
@@ -76,11 +97,11 @@ public class CourseView extends VerticalLayout {
 //        });
     }
 
-//    @Override
-//    protected void onAttach(AttachEvent attachEvent) {
-//        super.onAttach(attachEvent);
-//        CourseDto courseById = courseApiClient.getCourse();
-//
-//        System.out.println(courseById);
-//    }
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        CourseDto courseById = courseApiClient.getCourse();
+
+        System.out.println(courseById);
+    }
 }

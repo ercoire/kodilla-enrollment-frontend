@@ -22,4 +22,6 @@ public class CourseDto {
     private int duration;
     private String day;
     private LocalTime time;
+
+
 }

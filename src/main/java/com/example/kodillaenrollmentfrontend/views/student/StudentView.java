@@ -5,6 +5,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 
@@ -27,7 +28,8 @@ public class StudentView extends VerticalLayout { //todo add actions to buttons
 
         TextField firstname = new TextField("First name");
         TextField lastname = new TextField("Last name");
-        studentForm.add(firstname, lastname);
+        EmailField email = new EmailField("Email");
+        studentForm.add(firstname, lastname/*, email*/);
 
         add(functions);
         add(studentForm);

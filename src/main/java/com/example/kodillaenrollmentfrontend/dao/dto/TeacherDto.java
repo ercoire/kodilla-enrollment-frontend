@@ -12,4 +12,8 @@ public class TeacherDto {
     private String lastname;
     private String description;
 
+
+    public String getName() {
+        return firstname + " " + lastname;
+    }
 }

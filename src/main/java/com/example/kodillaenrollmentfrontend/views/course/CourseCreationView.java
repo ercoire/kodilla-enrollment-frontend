@@ -1,5 +1,10 @@
 package com.example.kodillaenrollmentfrontend.views.course;
 
+import com.example.kodillaenrollmentfrontend.dao.apiclient.CourseApiClient;
+import com.example.kodillaenrollmentfrontend.dao.apiclient.TeacherApiClient;
+import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
+import com.example.kodillaenrollmentfrontend.dao.dto.TeacherDto;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -11,26 +16,39 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.router.Route;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Route("course_create")
 public class CourseCreationView extends VerticalLayout {
 
     FormLayout courseForm = new FormLayout();
 
-    //    @Autowired
-//    private CourseApiClient courseApiClient;
-    //preset with values
+    @Autowired
+    private CourseApiClient courseApiClient;
+
+    @Autowired
+    private TeacherApiClient teacherApiClient;
+
+    ComboBox<DayOfWeek> day = new ComboBox<>("Day");
+    ComboBox<TeacherDto> assignedTeacher1 = new ComboBox<>("Teacher1");
+    ComboBox<TeacherDto> assignedTeacher2 = new ComboBox<>("Teacher2");
+
+    private List<TeacherDto> allTeachers() {
+        return teacherApiClient.getTeachers();
+    }
 
     public CourseCreationView() {
 
         TextField title = new TextField("Title");
 
-        ComboBox<String> assignedTeacher1 = new ComboBox<>("Teacher1");
-        ComboBox<String> assignedTeacher2 = new ComboBox<>("Teacher2");
         assignedTeacher1.setAllowCustomValue(false);
         assignedTeacher2.setAllowCustomValue(false);
-        //assignedTeacher1.setItems(teacherList); //todo
-        //assignedTeacher2.setItems(teacherList);
 
         DatePicker startingDate = new DatePicker("Starting Date");
         DatePicker endDate = new DatePicker("End Date");
@@ -42,9 +60,8 @@ public class CourseCreationView extends VerticalLayout {
         TextField duration = new TextField("Duration");
         duration.setSuffixComponent(new Span("min"));
 
-        ComboBox<String> day = new ComboBox<>("Day");
-        TimePicker time = new TimePicker("Time");
 
+        TimePicker time = new TimePicker("Time");
 
 
         HorizontalLayout mainContent = new HorizontalLayout(courseForm);
@@ -57,22 +74,51 @@ public class CourseCreationView extends VerticalLayout {
 
         add(mainContent);
         add(courseForm);
-        add(new Button("Create ")); //todo createCourse on Submit
-     //   save.addClickListener(event -> save());
 
-//
-//        Button button = new Button("text");
-//        button.addClickListener(event -> {
-//
-//        });
+        Button create = new Button("Create ");  //todo createCourse on Submit
+        add(create);
+
+        create.addClickListener(event -> {
+            String courseTitle = title.getValue();
+            LocalDate start = startingDate.getValue();
+            LocalDate end = endDate.getValue();
+//            TeacherDto teacher1 = assignedTeacher1.getValue();
+//            TeacherDto teacher2 = assignedTeacher2.getValue();
+            String dayOfWeek = String.valueOf(day.getValue());
+            int price = Integer.parseInt(pricePerMonth.getValue());
+            LocalTime t = time.getValue();
+            int durValue = Integer.parseInt(duration.getValue());
+            String desc = description.getValue();
+
+            createCourseFromForm(courseTitle, start, end,/* teacher1, teacher2, */dayOfWeek, price, t, durValue, desc);
+        });
 
     }
 
-//    @Override
-//    protected void onAttach(AttachEvent attachEvent) {
-//        super.onAttach(attachEvent);
-//        CourseDto courseById = courseApiClient.getCourse();
+    private void createCourseFromForm(String courseTitle, LocalDate start, LocalDate end,/* TeacherDto teacher1,
+                                      TeacherDto teacher2,*/ String dayOfWeek, int price, LocalTime t,
+                                      int durValue, String desc) {
+        List<TeacherDto> teachers = new ArrayList<>();
+//        teachers.add(teacher1);
+//        teachers.add(teacher2);
+        CourseDto dto = new CourseDto(null, courseTitle,new ArrayList<>(), start, end, price, desc, durValue, dayOfWeek, t);
+        courseApiClient.createCourse(dto);
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+
+        day.setItems(DayOfWeek.values());
+//        ComboBox.ItemFilter<TeacherDto> teacher1Filter = (teacherName, filterString) -> teacherName
+//                .toString().toLowerCase().startsWith(filterString.toLowerCase());
+//        assignedTeacher1.setItemLabelGenerator(TeacherDto::getName);
+//        assignedTeacher1.setItems(teacher1Filter, allTeachers());
 //
-//        System.out.println(courseById);
-//    }
+//        ComboBox.ItemFilter<TeacherDto> teacher2Filter = (teacherName, filterString) -> teacherName
+//                .toString().toLowerCase().startsWith(filterString.toLowerCase());
+//        assignedTeacher2.setItemLabelGenerator(TeacherDto::getName);
+//        assignedTeacher2.setItems(teacher2Filter, allTeachers());
+//        assignedTeacher2.setRequired(false);
+    }
 }

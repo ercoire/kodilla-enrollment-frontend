@@ -15,11 +15,7 @@ public class AdminView extends VerticalLayout {
         title.setWidthFull();
         add(title);
         HorizontalLayout layout = new HorizontalLayout(); //todo action to show all
-        Button courses = new Button("Courses");   //todo alternative from mainview - action on click - list of detailed views as in main view
-        Button students = new Button("Students");
-        Button teachers = new Button("Teachers");
-        Button payments = new Button("Payments");
-        Button calendar = new Button("See calendar"); //todo export to Google
+
 
         layout.setPadding(true);
         layout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
@@ -27,7 +23,7 @@ public class AdminView extends VerticalLayout {
       //  layout.setSizeFull();
         layout.setSpacing(false);
         layout.getThemeList().add("spacing");
-        layout.add(courses, students, teachers, payments, calendar);
+      //  layout.add(courses, students, teachers, payments, calendar);
 
         add(layout);
 
