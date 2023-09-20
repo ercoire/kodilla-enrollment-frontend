@@ -3,6 +3,7 @@ package com.example.kodillaenrollmentfrontend.dao.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.text.Format;
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -14,5 +15,10 @@ public class PaymentDto {
     private StudentDto studentDto;
     private int amount;
     private Long courseId;
+
+
+    public String fetchStudentName(){
+        return studentDto.toString();
+    }
 
 }

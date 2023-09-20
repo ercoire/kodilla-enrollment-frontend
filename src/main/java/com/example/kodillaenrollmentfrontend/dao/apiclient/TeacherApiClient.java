@@ -1,7 +1,6 @@
 package com.example.kodillaenrollmentfrontend.dao.apiclient;
 
 import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
-import com.example.kodillaenrollmentfrontend.dao.dto.StudentDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.TeacherDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,8 +20,8 @@ public class TeacherApiClient {
                 .toEntityList(TeacherDto.class).block().getBody();
     }
 
-    public TeacherDto getTeacher() {
-        return webClient.get().uri("/v1/teachers/{teacherId}")
+    public TeacherDto getTeacher(Long teacherId) {
+        return webClient.get().uri("/v1/teachers/{teacherId}", teacherId)
                 .retrieve()
                 .toEntity(TeacherDto.class).block().getBody();
     }
@@ -35,20 +34,21 @@ public class TeacherApiClient {
                 .toBodilessEntity().block();
     }
 
-    public TeacherDto updateTeacher() {
-        return webClient.put().uri("/v1/teachers/{teacherId}")
+    public TeacherDto updateTeacher(TeacherDto teacherDto) {
+        return webClient.put().uri("/v1/teachers/{teacherId}", teacherDto.getId())
+                .bodyValue(teacherDto)
                 .retrieve()
                 .toEntity(TeacherDto.class).block().getBody();
     }
 
-    public void deleteTeacher() {
-        webClient.delete().uri("/v1/teachers/{teacherId}")
+    public void deleteTeacher(Long teacherId) {
+        webClient.delete().uri("/v1/teachers/{teacherId}", teacherId)
                 .retrieve()
                 .toBodilessEntity().block();
     }
 
-    public List<CourseDto> getCoursesByTeacherId() {
-        return webClient.get().uri("/v1/teachers/{teacherId}/courses")
+    public List<CourseDto> getCoursesByTeacherId(Long teacherId) {
+        return webClient.get().uri("/v1/teachers/{teacherId}/courses", teacherId)
                 .retrieve()
                 .toEntityList(CourseDto.class).block().getBody();
     }

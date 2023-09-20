@@ -13,7 +13,6 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
@@ -42,7 +41,7 @@ public class PaymentCreationView extends VerticalLayout {
     }
 
     private List<CourseDto> allCourses() {
-        return courseApiClient.getAllCourses();
+        return courseApiClient.getCourses();
     }
 
 
@@ -74,12 +73,9 @@ public class PaymentCreationView extends VerticalLayout {
             CourseDto dto = course.getValue();
 
             if (date == null || person == null || amt.isEmpty() || dto == null) {
-                // Check if any required fields are empty and show an error notification.
                 Notification.show("Please fill in all required fields", 3000, Notification.Position.TOP_CENTER);
             } else {
-                // All required fields are filled, proceed with payment creation.
                 createPaymentFromForm(date, person, amt, dto);
-                // Optionally, show a success notification.
                 Notification.show("Payment created successfully", 3000, Notification.Position.TOP_CENTER);
             }
 

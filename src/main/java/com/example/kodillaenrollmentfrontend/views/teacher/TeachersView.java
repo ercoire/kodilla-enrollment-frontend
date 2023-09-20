@@ -10,6 +10,9 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,6 +26,7 @@ public class TeachersView extends VerticalLayout {
     TeacherApiClient teacherApiClient;
 
     private final Grid<TeacherDto> grid = new Grid<>(TeacherDto.class, false);
+
 
     public TeachersView() {
         add(new NativeLabel("See all teachers here. Happy clicking!"));
@@ -45,6 +49,13 @@ public class TeachersView extends VerticalLayout {
 
         create.addClickListener(event -> {
             UI.getCurrent().getPage().setLocation("/teacher_create");
+        });
+
+        grid.addItemClickListener(event -> {
+            TeacherDto selectedItem = event.getItem();
+            String teacherStringId = String.valueOf(selectedItem.getId());
+
+      //      UI.getCurrent().navigate(TeacherView.class, teacherStringId);
         });
 
 

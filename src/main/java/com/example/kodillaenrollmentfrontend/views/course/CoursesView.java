@@ -10,10 +10,13 @@ import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Map;
+
 @Route("courses")
-public class CoursesView extends VerticalLayout {  //todo fix to be created from actual bean
+public class CoursesView extends VerticalLayout {
 
     @Autowired
     private CourseApiClient courseApiClient;
@@ -37,7 +40,14 @@ public class CoursesView extends VerticalLayout {  //todo fix to be created from
         add(gridView);
 
         create.addClickListener(event -> {
-            UI.getCurrent().getPage().setLocation("/course_create");
+            UI.getCurrent().navigate(CourseCreationView.class);
+        });
+
+        grid.addItemClickListener(event -> {
+            Long clickedCourseId = event.getItem().getId();
+            UI.getCurrent().navigate(CourseView.class, new RouteParameters(Map.of(
+                    "courseId", clickedCourseId.toString()
+            )));
         });
 
     }
@@ -45,6 +55,6 @@ public class CoursesView extends VerticalLayout {  //todo fix to be created from
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
-        grid.setItems(courseApiClient.getAllCourses());
+        grid.setItems(courseApiClient.getCourses());
     }
 }

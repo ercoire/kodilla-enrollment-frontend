@@ -2,6 +2,7 @@ package com.example.kodillaenrollmentfrontend.views.student;
 
 import com.example.kodillaenrollmentfrontend.dao.apiclient.StudentApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.StudentDto;
+import com.example.kodillaenrollmentfrontend.views.course.CourseView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -10,9 +11,10 @@ import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
+import java.util.Map;
 
 @Route("students")
 public class StudentsView extends VerticalLayout {
@@ -27,7 +29,10 @@ public class StudentsView extends VerticalLayout {
         add(new NativeLabel("Your students here!"));
         HorizontalLayout functions = new HorizontalLayout();
         Button create = new Button("Create new");
-        create.addClickListener(event -> UI.getCurrent().getPage().setLocation("/student_create"));
+        create.addClickListener(event -> {
+            UI.getCurrent().navigate(StudentCreationView.class);
+        });
+
         Button export = new Button("Export to GoogleSheets");  //todo
 
         functions.add(create, export);
@@ -39,6 +44,12 @@ public class StudentsView extends VerticalLayout {
         grid.setColumns("firstname", "lastname" /*, "email"*/);
 
         add(gridView);
+        grid.addItemClickListener(event -> {
+            Long clickedStudentId = event.getItem().getId();
+            UI.getCurrent().navigate(StudentView.class, new RouteParameters(Map.of(
+                    "studentId", clickedStudentId.toString()
+            )));
+        });
     }
 
     @Override

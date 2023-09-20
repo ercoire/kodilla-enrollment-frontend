@@ -24,8 +24,9 @@ public class StudentApiClient {
                 .toBodilessEntity().block();
     }
 
-    public StudentDto updateStudent() {
-        return webClient.put().uri("/v1/students/{studentId}")
+    public StudentDto updateStudent(StudentDto dto) {
+        return webClient.put().uri("/v1/students/{studentId}", dto.getId())
+                .bodyValue(dto)
                 .retrieve()
                 .toEntity(StudentDto.class).block().getBody();
     }
@@ -36,26 +37,26 @@ public class StudentApiClient {
                 .toEntityList(StudentDto.class).block().getBody();
     }
 
-    public StudentDto getStudent() {
-        return webClient.get().uri("/v1/students/{studentId}")
+    public StudentDto getStudent(Long studentId) {
+        return webClient.get().uri("/v1/students/{studentId}", studentId)
                 .retrieve()
                 .toEntity(StudentDto.class).block().getBody();
     }
 
-    public void deleteStudent() {
-        webClient.delete().uri("/v1/students/{studentId}")
+    public void deleteStudent(Long studentId) {
+        webClient.delete().uri("/v1/students/{studentId}", studentId)
                 .retrieve()
                 .toBodilessEntity().block();
     }
 
-    public List<CourseDto> getCoursesByStudentId() {
-        return webClient.get().uri("/v1/students/{studentId}/courses")
+    public List<CourseDto> getCoursesByStudentId(Long studentId) {
+        return webClient.get().uri("/v1/students/{studentId}/courses", studentId)
                 .retrieve()
                 .toEntityList(CourseDto.class).block().getBody();
     }
 
-    public List<PaymentDto> getPaymentsByStudent() {
-        return webClient.get().uri("/v1/students/{studentId}/payments")
+    public List<PaymentDto> getPaymentsByStudent(Long studentId) {
+        return webClient.get().uri("/v1/students/{studentId}/payments", studentId)
                 .retrieve()
                 .toEntityList(PaymentDto.class).block().getBody();
     }

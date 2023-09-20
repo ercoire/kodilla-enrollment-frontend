@@ -43,12 +43,9 @@ public class TeacherCreationView extends VerticalLayout {
             String desc = description.getValue();
 
             if (first == null || last == null || desc == null) {
-                // Check if any required fields are empty and show an error notification.
                 Notification.show("Please fill in all required fields", 3000, Notification.Position.TOP_CENTER);
             } else {
-                // All required fields are filled, proceed with payment creation.
                 createTeacher(first, last, desc);
-                // Optionally, show a success notification.
                 Notification.show("Payment created successfully", 3000, Notification.Position.TOP_CENTER);
             }
             UI.getCurrent().getPage().setLocation("/teachers");

@@ -32,23 +32,11 @@ public class CourseCreationView extends VerticalLayout {
     @Autowired
     private CourseApiClient courseApiClient;
 
-    @Autowired
-    private TeacherApiClient teacherApiClient;
-
     ComboBox<DayOfWeek> day = new ComboBox<>("Day");
-    ComboBox<TeacherDto> assignedTeacher1 = new ComboBox<>("Teacher1");
-    ComboBox<TeacherDto> assignedTeacher2 = new ComboBox<>("Teacher2");
-
-    private List<TeacherDto> allTeachers() {
-        return teacherApiClient.getTeachers();
-    }
 
     public CourseCreationView() {
 
         TextField title = new TextField("Title");
-
-        assignedTeacher1.setAllowCustomValue(false);
-        assignedTeacher2.setAllowCustomValue(false);
 
         DatePicker startingDate = new DatePicker("Starting Date");
         DatePicker endDate = new DatePicker("End Date");
@@ -57,16 +45,16 @@ public class CourseCreationView extends VerticalLayout {
         pricePerMonth.setSuffixComponent(new Span("PLN"));
 
         TextArea description = new TextArea("Description");
+        description.setWidthFull();
+
         TextField duration = new TextField("Duration");
         duration.setSuffixComponent(new Span("min"));
 
-
         TimePicker time = new TimePicker("Time");
-
 
         HorizontalLayout mainContent = new HorizontalLayout(courseForm);
         mainContent.setSizeFull();
-        courseForm.add(title, startingDate, endDate, assignedTeacher1, assignedTeacher2, pricePerMonth, day, time, duration, description);
+        courseForm.add(title, startingDate, endDate, pricePerMonth, day, time, duration, description);
         courseForm.setColspan(title, 3);
         courseForm.setColspan(description, 3);
 
@@ -82,8 +70,7 @@ public class CourseCreationView extends VerticalLayout {
             String courseTitle = title.getValue();
             LocalDate start = startingDate.getValue();
             LocalDate end = endDate.getValue();
-//            TeacherDto teacher1 = assignedTeacher1.getValue();
-//            TeacherDto teacher2 = assignedTeacher2.getValue();
+
             String dayOfWeek = String.valueOf(day.getValue());
             int price = Integer.parseInt(pricePerMonth.getValue());
             LocalTime t = time.getValue();
@@ -98,9 +85,7 @@ public class CourseCreationView extends VerticalLayout {
     private void createCourseFromForm(String courseTitle, LocalDate start, LocalDate end,/* TeacherDto teacher1,
                                       TeacherDto teacher2,*/ String dayOfWeek, int price, LocalTime t,
                                       int durValue, String desc) {
-        List<TeacherDto> teachers = new ArrayList<>();
-//        teachers.add(teacher1);
-//        teachers.add(teacher2);
+
         CourseDto dto = new CourseDto(null, courseTitle,new ArrayList<>(), start, end, price, desc, durValue, dayOfWeek, t);
         courseApiClient.createCourse(dto);
     }
@@ -110,15 +95,6 @@ public class CourseCreationView extends VerticalLayout {
         super.onAttach(attachEvent);
 
         day.setItems(DayOfWeek.values());
-//        ComboBox.ItemFilter<TeacherDto> teacher1Filter = (teacherName, filterString) -> teacherName
-//                .toString().toLowerCase().startsWith(filterString.toLowerCase());
-//        assignedTeacher1.setItemLabelGenerator(TeacherDto::getName);
-//        assignedTeacher1.setItems(teacher1Filter, allTeachers());
-//
-//        ComboBox.ItemFilter<TeacherDto> teacher2Filter = (teacherName, filterString) -> teacherName
-//                .toString().toLowerCase().startsWith(filterString.toLowerCase());
-//        assignedTeacher2.setItemLabelGenerator(TeacherDto::getName);
-//        assignedTeacher2.setItems(teacher2Filter, allTeachers());
-//        assignedTeacher2.setRequired(false);
+
     }
 }
