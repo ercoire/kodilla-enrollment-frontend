@@ -1,8 +1,9 @@
 package com.example.kodillaenrollmentfrontend.views.teacher;
 
-import com.example.kodillaenrollmentfrontend.dao.apiclient.CourseApiClient;
 import com.example.kodillaenrollmentfrontend.dao.apiclient.TeacherApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
+import com.example.kodillaenrollmentfrontend.dao.dto.StudentDto;
+import com.example.kodillaenrollmentfrontend.dao.dto.TeacherDto;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -14,18 +15,27 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@Route("teacher")
-public class TeacherView extends VerticalLayout {
+@Route("teacher-details/:teacherId?")
+public class TeacherView extends VerticalLayout implements BeforeEnterObserver {
+
     FormLayout teacherForm = new FormLayout();
+
+    private String teacherId;
 
     @Autowired
     private TeacherApiClient teacherApiClient;
 
+    TextField firstname = new TextField("First name");
+    TextField lastname = new TextField("Last name");
+    TextArea description = new TextArea("Bio");
 
     public TeacherView() {
         HorizontalLayout functions = new HorizontalLayout();
@@ -38,12 +48,12 @@ public class TeacherView extends VerticalLayout {
 
         Button edit = new Button("Edit");
         edit.addClickListener(event -> {
-            UI.getCurrent().getPage().setLocation("/teacher_edit");
+            UI.getCurrent().navigate(TeacherEditView.class, new RouteParameters("teacherId", teacherId));
         });
 
         Button delete = new Button("Delete");
         delete.addClickListener(event -> {
-            //  deleteTeacherById(id);   //todo
+            deleteTeacherById(Long.valueOf(teacherId));
             add(Notification.show("Teacher deleted successfully!"));
             UI.getCurrent().getPage().setLocation("/teachers");
         });
@@ -54,10 +64,6 @@ public class TeacherView extends VerticalLayout {
 
         functions.add(edit, delete, create, showCourses, export);
         add(functions);
-
-        TextField firstname = new TextField("First name");
-        TextField lastname = new TextField("Last name");
-        TextArea description = new TextArea("Bio");
 
         teacherForm.add(firstname, lastname, description);
         teacherForm.setColspan(description, 3);
@@ -79,8 +85,7 @@ public class TeacherView extends VerticalLayout {
 
         showCourses.addClickListener(event -> {
             courseGrid.setVisible(true);
-            //todo getId from the presented teacher
-            Long id = null;
+            Long id = Long.valueOf(teacherId);
             List<CourseDto> courseList = teacherApiClient.getCoursesByTeacherId(id);
             courseGrid.setItems(courseList);
 
@@ -90,13 +95,21 @@ public class TeacherView extends VerticalLayout {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
-        //todo pass teacher id
-        Long id = null;
-        teacherApiClient.getTeacher(id);
+        teacherApiClient.getTeacher(Long.valueOf(teacherId));
+        TeacherDto teacherDto = teacherApiClient.getTeacher(Long.valueOf(teacherId));
+        firstname.setValue(teacherDto.getFirstname());
+        lastname.setValue(teacherDto.getLastname());
+        description.setValue(teacherDto.getDescription());
     }
 
     private void deleteTeacherById(Long id) {
         teacherApiClient.deleteTeacher(id);
+    }
+
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        this.teacherId = event.getRouteParameters().get("teacherId").orElseThrow();
     }
 }
 

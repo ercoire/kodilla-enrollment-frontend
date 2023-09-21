@@ -6,6 +6,7 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -24,7 +25,8 @@ public class CoursesView extends VerticalLayout {
     private final Grid<CourseDto> grid = new Grid<>(CourseDto.class);
 
     public CoursesView() {
-        add(new NativeLabel("Your courses here!"));
+        add(new NativeLabel("Your courses here!"));  //todo native label justified
+
         HorizontalLayout functions = new HorizontalLayout();
         Button create = new Button("Create new");
         Button export = new Button("Export to GoogleSheets");  //todo
@@ -35,12 +37,15 @@ public class CoursesView extends VerticalLayout {
         HorizontalLayout gridView = new HorizontalLayout();
         gridView.setSizeFull();
         gridView.add(grid);
-        grid.setColumns("title", "assignedTeachers", "startingDate", "endDate", "pricePerMonth", "description", "duration", "day", "time");
-
+        grid.setColumns("title", "assignedTeachers", "startingDate", "endDate", "pricePerMonth",
+                "description", "duration", "day", "time");
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+        grid.setAllRowsVisible(true);
         add(gridView);
 
         create.addClickListener(event -> {
-            UI.getCurrent().navigate(CourseCreationView.class);
+            UI.getCurrent().getPage().setLocation("/course_create");
+            ;
         });
 
         grid.addItemClickListener(event -> {

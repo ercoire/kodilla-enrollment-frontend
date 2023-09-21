@@ -48,7 +48,7 @@ public class StudentCreationView extends VerticalLayout {
                 fail.setDuration(3000);
                 fail.setPosition(Notification.Position.TOP_CENTER);
                 fail.addThemeVariants(NotificationVariant.LUMO_WARNING);
-                fail.open();
+                fail.open();  //todo does not open
             } else {
                 createStudent(first, last/*, mail*/);
                 UI.getCurrent().getPage().setLocation("/students");

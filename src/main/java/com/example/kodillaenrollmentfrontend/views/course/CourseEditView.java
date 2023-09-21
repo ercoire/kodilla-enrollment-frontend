@@ -5,6 +5,7 @@ import com.example.kodillaenrollmentfrontend.dao.apiclient.TeacherApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.TeacherDto;
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -103,9 +104,9 @@ public class CourseEditView extends VerticalLayout implements BeforeEnterObserve
             n.setPosition(Notification.Position.TOP_CENTER);
             n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             n.open();
-            //todo move to student list in the course?
+            UI.getCurrent().getPage().setLocation("/courses");
         });
-
+        add(submit);
     }
 
     private void updateCourseFromForm(String courseTitle, List<TeacherDto> teachers, LocalDate start, LocalDate end,

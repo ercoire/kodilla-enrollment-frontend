@@ -5,11 +5,14 @@ import com.example.kodillaenrollmentfrontend.dao.apiclient.TeacherApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.TeacherDto;
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -78,6 +81,11 @@ public class CourseCreationView extends VerticalLayout {
             String desc = description.getValue();
 
             createCourseFromForm(courseTitle, start, end,/* teacher1, teacher2, */dayOfWeek, price, t, durValue, desc);
+            Notification n = new Notification("Course created successfully");
+            n.setPosition(Notification.Position.TOP_CENTER);
+            n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            n.open();
+            UI.getCurrent().getPage().setLocation("/courses");
         });
 
     }

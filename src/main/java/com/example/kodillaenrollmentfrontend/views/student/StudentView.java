@@ -55,6 +55,7 @@ public class StudentView extends VerticalLayout implements BeforeEnterObserver {
         delete.addClickListener(event -> {
             deleteStudentById(Long.valueOf(studentId));
             add(Notification.show("Student deleted successfully!"));
+            //todo notification not working
             UI.getCurrent().getPage().setLocation("/students");
         });
 

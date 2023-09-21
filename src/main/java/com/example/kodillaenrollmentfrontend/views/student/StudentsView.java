@@ -7,6 +7,7 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -42,6 +43,8 @@ public class StudentsView extends VerticalLayout {
         gridView.setSizeFull();
         gridView.add(grid);
         grid.setColumns("firstname", "lastname" /*, "email"*/);
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+        grid.setAllRowsVisible(true);
 
         add(gridView);
         grid.addItemClickListener(event -> {

@@ -1,7 +1,6 @@
 package com.example.kodillaenrollmentfrontend.views.teacher;
 
 import com.example.kodillaenrollmentfrontend.dao.apiclient.TeacherApiClient;
-import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.TeacherDto;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
@@ -12,28 +11,27 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-
-@Route("teacher_edit")
-public class TeacherEditView extends VerticalLayout {
+@Route("teacher_edit/:teacherId?")
+public class TeacherEditView extends VerticalLayout implements BeforeEnterObserver {
 
     FormLayout teacherForm = new FormLayout();
+
+    private String teacherId;
+
 
     @Autowired
     private TeacherApiClient teacherApiClient;
 
+    TextField firstname = new TextField("First name");
+    TextField lastname = new TextField("Last name");
+    TextArea description = new TextArea("Bio");
 
     public TeacherEditView() {
-
-        //todo preset with data
-        TextField firstname = new TextField("First name");
-        TextField lastname = new TextField("Last name");
-        TextArea description = new TextArea("Bio");
 
         teacherForm.add(firstname, lastname, description);
         teacherForm.setColspan(description, 3);
@@ -57,19 +55,29 @@ public class TeacherEditView extends VerticalLayout {
 
             UI.getCurrent().getPage().setLocation("/teachers");
         });
+
+        add(submit);
     }
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
-        Long id = null;
-        teacherApiClient.getTeacher(id);  //todo pass Id value
+        Long id = Long.parseLong(teacherId);
+       TeacherDto teacherDto = teacherApiClient.getTeacher(id);
+        firstname.setValue(teacherDto.getFirstname());
+        lastname.setValue(teacherDto.getLastname());
+        description.setValue(teacherDto.getDescription());
     }
 
     private void updateTeacherFromForm(String first, String last, String bio) {
-        TeacherDto dto = new TeacherDto(null, first, last, bio);
-        //todo pass dto value
+        TeacherDto dto = new TeacherDto(Long.parseLong(teacherId), first, last, bio);
         teacherApiClient.updateTeacher(dto);
+
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        this.teacherId = event.getRouteParameters().get("teacherId").orElseThrow();
     }
 }
 
