@@ -8,6 +8,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -16,6 +17,9 @@ import com.vaadin.flow.router.RouteParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
+
+import static com.vaadin.flow.dom.Style.TextAlign.CENTER;
+import static com.vaadin.flow.dom.Style.TextAlign.JUSTIFY;
 
 
 @Route("teachers")
@@ -27,14 +31,15 @@ public class TeachersView extends VerticalLayout {
     private final Grid<TeacherDto> grid = new Grid<>(TeacherDto.class, false);
 
     public TeachersView() {
-        add(new NativeLabel("See all teachers here"));  //todo native label justified
+        H1 title = new H1("See all teachers here");
+        title.getStyle().set("font-size", "var(--lumo-font-size-m)")
+                .set("margin", "0");
 
         HorizontalLayout functions = new HorizontalLayout();
         Button create = new Button("Create new");
         Button export = new Button("Export to GoogleSheets");  //todo
 
         functions.add(create, export);
-        add(functions);
 
         grid.addColumn(TeacherDto::getFirstname).setHeader("First name").setSortable(true);
         grid.addColumn(TeacherDto::getLastname).setHeader("Last name").setSortable(true);
@@ -43,7 +48,7 @@ public class TeachersView extends VerticalLayout {
         grid.setAllRowsVisible(true);
         Div gridContainer = new Div(grid);
         gridContainer.setSizeFull();
-        add(gridContainer);
+
 
         create.addClickListener(event -> {
             UI.getCurrent().getPage().setLocation("/teacher_create");
@@ -56,7 +61,9 @@ public class TeachersView extends VerticalLayout {
                     "teacherId", clickedTeacherId.toString())));
         });
 
-
+        add(title);
+        add(functions);
+        add(gridContainer);
     }
 
     @Override

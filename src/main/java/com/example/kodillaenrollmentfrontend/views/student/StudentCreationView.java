@@ -7,6 +7,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -21,29 +22,36 @@ public class StudentCreationView extends VerticalLayout {
     @Autowired
     StudentApiClient studentApiClient;
 
+    TextField firstname = new TextField("First name");
+    TextField lastname = new TextField("Last name");
+    EmailField email = new EmailField("Email");
+
     public StudentCreationView() {
 
-        TextField firstname = new TextField("First name");
-        firstname.setRequired(true);
-        TextField lastname = new TextField("Last name");
-        lastname.setRequired(true);
-        EmailField email = new EmailField("Email");
 
+        firstname.setRequired(true);
+        lastname.setRequired(true);
 
         studentForm.add(firstname, lastname /*, email*/);
         studentForm.setSizeFull();
 
+        HorizontalLayout buttons = createButtonsLayout();
+
         add(studentForm);
+        add(buttons);
+
+    }
+
+    private HorizontalLayout createButtonsLayout() {
+        HorizontalLayout functions = new HorizontalLayout();
         Button create = new Button("Create ");
-        add(create);
 
         create.addClickListener(event -> {
             String first = firstname.getValue();
             String last = lastname.getValue();
-         //   String mail = email.getValue();
+            //   String mail = email.getValue();
 
-
-            if(first == null || last == null || first.equals("") || last.equals("")){
+            if (first == null || last == null || first.equals("") || last.equals("")) {
                 Notification fail = new Notification("Please fill in all required fields");
                 fail.setDuration(3000);
                 fail.setPosition(Notification.Position.TOP_CENTER);
@@ -54,6 +62,9 @@ public class StudentCreationView extends VerticalLayout {
                 UI.getCurrent().getPage().setLocation("/students");
             }
         });
+
+        add(create);
+        return functions;
     }
 
     private void createStudent(String firstname, String lastname /*, String mail*/) {

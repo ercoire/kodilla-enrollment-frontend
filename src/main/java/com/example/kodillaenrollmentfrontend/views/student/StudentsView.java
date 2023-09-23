@@ -6,8 +6,10 @@ import com.example.kodillaenrollmentfrontend.views.course.CourseView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.charts.model.style.Style;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -27,7 +29,38 @@ public class StudentsView extends VerticalLayout {
 
 
     public StudentsView() {
-        add(new NativeLabel("Your students here!"));
+
+        H1 title = new H1("See all teachers here");
+        title.getStyle().set("font-size", "var(--lumo-font-size-m)")
+                .set("margin", "0");
+
+        HorizontalLayout buttons = createButtonsLayout();
+        HorizontalLayout students = createStudentsGridLayout();
+
+        add(title);
+        add(buttons);
+        add(students);
+    }
+
+    private HorizontalLayout createStudentsGridLayout() {
+        HorizontalLayout gridView = new HorizontalLayout();
+        gridView.setSizeFull();
+        gridView.add(grid);
+        grid.setColumns("firstname", "lastname" /*, "email"*/);
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+        grid.setAllRowsVisible(true);
+
+        grid.addItemClickListener(event -> {
+            Long clickedStudentId = event.getItem().getId();
+            UI.getCurrent().navigate(StudentView.class, new RouteParameters(Map.of(
+                    "studentId", clickedStudentId.toString()
+            )));
+        });
+
+        return gridView;
+    }
+
+    private HorizontalLayout createButtonsLayout() {
         HorizontalLayout functions = new HorizontalLayout();
         Button create = new Button("Create new");
         create.addClickListener(event -> {
@@ -38,21 +71,7 @@ public class StudentsView extends VerticalLayout {
 
         functions.add(create, export);
         add(functions);
-
-        HorizontalLayout gridView = new HorizontalLayout();
-        gridView.setSizeFull();
-        gridView.add(grid);
-        grid.setColumns("firstname", "lastname" /*, "email"*/);
-        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
-        grid.setAllRowsVisible(true);
-
-        add(gridView);
-        grid.addItemClickListener(event -> {
-            Long clickedStudentId = event.getItem().getId();
-            UI.getCurrent().navigate(StudentView.class, new RouteParameters(Map.of(
-                    "studentId", clickedStudentId.toString()
-            )));
-        });
+        return functions;
     }
 
     @Override

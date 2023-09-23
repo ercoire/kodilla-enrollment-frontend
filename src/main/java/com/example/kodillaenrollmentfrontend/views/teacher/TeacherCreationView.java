@@ -6,6 +6,8 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -20,21 +22,34 @@ public class TeacherCreationView extends VerticalLayout {
 
     FormLayout teacherForm = new FormLayout();
 
+    TextField firstname = new TextField("First name");
+    TextField lastname = new TextField("Last name");
+    TextArea description = new TextArea("Bio");
+
+    Notification fail = new Notification("Please fill in all required fields!");
+    Notification success = new Notification("Teacher created successfully!");
+
     public TeacherCreationView() {
-
-
-        TextField firstname = new TextField("First name");
-        TextField lastname = new TextField("Last name");
-        TextArea description = new TextArea("Bio");
-
 
         teacherForm.add(firstname, lastname, description);
         teacherForm.setColspan(description, 3);
-
         teacherForm.setSizeFull();
-
         add(teacherForm);
-        Button create = new Button("Create "); //todo createTeacher on click
+
+        fail.setPosition(Notification.Position.TOP_CENTER);
+        fail.setDuration(3000);
+
+        success.setPosition(Notification.Position.TOP_CENTER);
+        success.setDuration(10000);
+        success.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+
+        HorizontalLayout creation = submitTeacherForm();
+        add(creation);
+    }
+
+    private HorizontalLayout submitTeacherForm() {
+        HorizontalLayout submitForm = new HorizontalLayout();
+        Button create = new Button("Create ");
         add(create);
 
         create.addClickListener(event -> {
@@ -42,15 +57,16 @@ public class TeacherCreationView extends VerticalLayout {
             String last = lastname.getValue();
             String desc = description.getValue();
 
-            if (first == null || last == null || desc == null) {
-                Notification.show("Please fill in all required fields", 3000, Notification.Position.TOP_CENTER);
+            if (first.isEmpty() || last.isEmpty() || desc.isEmpty()) {
+                fail.open();
             } else {
                 createTeacher(first, last, desc);
-                Notification.show("Payment created successfully", 3000, Notification.Position.TOP_CENTER);
+                //   success.open();  //todo show notification
+                UI.getCurrent().getPage().setLocation("/teachers");
             }
-            UI.getCurrent().getPage().setLocation("/teachers");
         });
-
+        submitForm.add(create);
+        return submitForm;
     }
 
     private void createTeacher(String firstname, String lastname, String description) {

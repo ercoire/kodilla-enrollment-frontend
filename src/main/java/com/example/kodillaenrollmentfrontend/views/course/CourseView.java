@@ -11,7 +11,7 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.ColumnRendering;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
@@ -25,8 +25,6 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteParameters;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.time.LocalDate;
 
 @Route("course-details/:courseId")
 public class CourseView extends VerticalLayout implements BeforeEnterObserver {
@@ -49,11 +47,25 @@ public class CourseView extends VerticalLayout implements BeforeEnterObserver {
     TimePicker time = new TimePicker("Time");
 
     private final Grid<PaymentDto> paymentGrid = new Grid<>(PaymentDto.class, false);
+    private final Grid<StudentDto> studentGrid = new Grid<>(StudentDto.class, false);
 
     public CourseView() {
         add(new NativeLabel("Choose a button to edit, delete or export your course"));
 
+        HorizontalLayout functions = createButtonsLayout();
+        HorizontalLayout paymentLayout = createPaymentLayout();
+        HorizontalLayout courseFormLayout = createCourseForm();
+        HorizontalLayout studentLayout = createStudentLayout();
+
+        add(functions);
+        add(courseFormLayout);
+        add(paymentLayout);
+        add(studentLayout);
+    }
+
+    private HorizontalLayout createButtonsLayout() {
         HorizontalLayout functions = new HorizontalLayout();
+
         Button create = new Button("Create new");
         create.addClickListener(event -> {
             UI.getCurrent().getPage().setLocation("/course_create");
@@ -63,6 +75,7 @@ public class CourseView extends VerticalLayout implements BeforeEnterObserver {
         edit.addClickListener(event -> {
             UI.getCurrent().navigate(CourseEditView.class, new RouteParameters("courseId", courseId));
         });
+
         Button delete = new Button("Delete");
         delete.addClickListener(event -> {
             deleteCourseById(courseId);
@@ -72,39 +85,42 @@ public class CourseView extends VerticalLayout implements BeforeEnterObserver {
 
         Button showPayments = new Button("Show payment list");
         showPayments.addClickListener(event -> {
-            Long id = Long.parseLong(courseId);
-            paymentGrid.setItems(courseApiClient.getPaymentsByCourseId(id));
-            Div gridView = new Div();
-            gridView.setSizeFull();
-
-            //todo not working
-   /*         //paymentGrid.setVisible(true);
-            paymentGrid.addColumn(PaymentDto::getPaymentDate).setHeader("Payment date").setSortable(true);
-            paymentGrid.addColumn(PaymentDto::fetchStudentName).setHeader("Student").setSortable(true);
-            paymentGrid.addColumn(PaymentDto::getAmount).setHeader("Amount").setSortable(true);
-            paymentGrid.setSizeFull();
-            paymentGrid.setColumnRendering(ColumnRendering.LAZY);
-
-            gridView.add(paymentGrid);
-  */          add(gridView);
+            paymentGrid.setVisible(!paymentGrid.isVisible());
         });
 
-
+        Button showStudents = new Button("Show students");
+        showStudents.addClickListener(event -> {
+            studentGrid.setVisible(!studentGrid.isVisible());
+        });
 
         Button addStudent = new Button("Add Student");
         addStudent.addClickListener(event -> {
-            UI.getCurrent().getPage().setLocation("/course_edit");
+            UI.getCurrent().navigate(StudentToCourseView.class, new RouteParameters("courseId", courseId));
         });
+
         Button export = new Button("Export to Google Sheets"); //todo
-        functions.add(edit, delete, create, showPayments, addStudent, export);
-        add(functions);
 
+        functions.add(edit, delete, create, showPayments, showStudents, addStudent, export);
+        return functions;
+    }
 
+    private HorizontalLayout createCourseForm() {
         HorizontalLayout mainContent = new HorizontalLayout(courseForm);
         mainContent.setSizeFull();
         pricePerMonth.setSuffixComponent(new Span("PLN"));
         duration.setSuffixComponent(new Span("min"));
         description.setWidthFull();
+
+        title.setReadOnly(true);
+        startingDate.setReadOnly(true);
+        endDate.setReadOnly(true);
+        assignedTeacher1.setReadOnly(true);
+        assignedTeacher2.setReadOnly(true);
+        pricePerMonth.setReadOnly(true);
+        day.setReadOnly(true);
+        time.setReadOnly(true);
+        duration.setReadOnly(true);
+        description.setReadOnly(true);
 
         courseForm.add(title, startingDate, endDate, assignedTeacher1, assignedTeacher2, pricePerMonth,
                 day, time, duration, description);
@@ -112,32 +128,55 @@ public class CourseView extends VerticalLayout implements BeforeEnterObserver {
         courseForm.setColspan(description, 3);
 
         courseForm.setSizeFull();
+        return mainContent;
+    }
 
-        add(functions);
-        add(mainContent);
-//        add(courseForm);
+    private HorizontalLayout createPaymentLayout() {
+        HorizontalLayout gridView = new HorizontalLayout();
+        gridView.setSizeFull();
 
+        paymentGrid.addColumn(PaymentDto::getPaymentDate).setHeader("Payment date").setSortable(true);
+        paymentGrid.addColumn(PaymentDto::fetchStudentName).setHeader("Student").setSortable(true);
+        paymentGrid.addColumn(PaymentDto::getAmount).setHeader("Amount").setSortable(true);
+        paymentGrid.setSizeFull();
+        paymentGrid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+        paymentGrid.setAllRowsVisible(true);
+        paymentGrid.setVisible(false);
+        gridView.add(paymentGrid);
+        return gridView;
+    }
 
+    private HorizontalLayout createStudentLayout() {
+        HorizontalLayout gridView = new HorizontalLayout();
+        gridView.setSizeFull();
+
+        studentGrid.addColumn(StudentDto::getStudentName).setHeader("Student").setSortable(true);
+        studentGrid.setSizeFull();
+        studentGrid.setColumnRendering(ColumnRendering.LAZY);
+        studentGrid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+        studentGrid.setAllRowsVisible(true);
+        studentGrid.setVisible(false);
+        gridView.add(studentGrid);
+        return gridView;
     }
 
     private void deleteCourseById(String courseId) {
         courseApiClient.deleteCourse(Long.parseLong(courseId));
     }
 
-
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
         Long id = Long.parseLong(courseId);
         CourseDto retrieved = courseApiClient.getCourse(id);
+
         title.setValue(retrieved.getTitle());
         if (retrieved.getAssignedTeachers().size() > 0) {
-            assignedTeacher1.setValue(retrieved.getAssignedTeachers().get(0).toString());
+            assignedTeacher1.setValue(retrieved.getAssignedTeachers().get(0).getName());
         }
         if (retrieved.getAssignedTeachers().size() > 1) {
-            assignedTeacher2.setValue(retrieved.getAssignedTeachers().get(1).toString());
+            assignedTeacher2.setValue(retrieved.getAssignedTeachers().get(1).getName());
         }
-
         startingDate.setValue(retrieved.getStartingDate());
         endDate.setValue(retrieved.getEndDate());
         pricePerMonth.setValue(String.valueOf(retrieved.getPricePerMonth()));
@@ -145,6 +184,9 @@ public class CourseView extends VerticalLayout implements BeforeEnterObserver {
         duration.setValue(String.valueOf(retrieved.getDuration()));
         day.setValue(retrieved.getDay());
         time.setValue(retrieved.getTime());
+
+        paymentGrid.setItems(courseApiClient.getPaymentsByCourseId(id));
+        studentGrid.setItems(courseApiClient.getStudentsByCourse(id));
     }
 
     @Override

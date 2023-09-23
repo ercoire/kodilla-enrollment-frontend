@@ -1,9 +1,7 @@
 package com.example.kodillaenrollmentfrontend.views.course;
 
 import com.example.kodillaenrollmentfrontend.dao.apiclient.CourseApiClient;
-import com.example.kodillaenrollmentfrontend.dao.apiclient.TeacherApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
-import com.example.kodillaenrollmentfrontend.dao.dto.TeacherDto;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -25,7 +23,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.List;
 
 @Route("course_create")
 public class CourseCreationView extends VerticalLayout {
@@ -35,39 +32,28 @@ public class CourseCreationView extends VerticalLayout {
     @Autowired
     private CourseApiClient courseApiClient;
 
+    TextField title = new TextField("Title");
+    DatePicker startingDate = new DatePicker("Starting Date");
+    DatePicker endDate = new DatePicker("End Date");
+    TextField pricePerMonth = new TextField("Price");
+    TextArea description = new TextArea("Description");
+    TextField duration = new TextField("Duration");
+    TimePicker time = new TimePicker("Time");
     ComboBox<DayOfWeek> day = new ComboBox<>("Day");
 
     public CourseCreationView() {
 
-        TextField title = new TextField("Title");
-
-        DatePicker startingDate = new DatePicker("Starting Date");
-        DatePicker endDate = new DatePicker("End Date");
-
-        TextField pricePerMonth = new TextField("Price");
-        pricePerMonth.setSuffixComponent(new Span("PLN"));
-
-        TextArea description = new TextArea("Description");
-        description.setWidthFull();
-
-        TextField duration = new TextField("Duration");
-        duration.setSuffixComponent(new Span("min"));
-
-        TimePicker time = new TimePicker("Time");
-
-        HorizontalLayout mainContent = new HorizontalLayout(courseForm);
-        mainContent.setSizeFull();
-        courseForm.add(title, startingDate, endDate, pricePerMonth, day, time, duration, description);
-        courseForm.setColspan(title, 3);
-        courseForm.setColspan(description, 3);
-
-        courseForm.setSizeFull();
+        HorizontalLayout mainContent = createCourseForm();
+        HorizontalLayout buttons = createButtonsLayout();
 
         add(mainContent);
-        add(courseForm);
+        add(buttons);
+    }
 
-        Button create = new Button("Create ");  //todo createCourse on Submit
-        add(create);
+    private HorizontalLayout createButtonsLayout() {
+        HorizontalLayout buttons = new HorizontalLayout();
+
+        Button create = new Button("Create ");
 
         create.addClickListener(event -> {
             String courseTitle = title.getValue();
@@ -80,21 +66,38 @@ public class CourseCreationView extends VerticalLayout {
             int durValue = Integer.parseInt(duration.getValue());
             String desc = description.getValue();
 
-            createCourseFromForm(courseTitle, start, end,/* teacher1, teacher2, */dayOfWeek, price, t, durValue, desc);
+            createCourseFromForm(courseTitle, start, end, dayOfWeek, price, t, durValue, desc);
             Notification n = new Notification("Course created successfully");
             n.setPosition(Notification.Position.TOP_CENTER);
             n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-            n.open();
+            n.setDuration(20000);
+            n.open();  //todo doesn't work
             UI.getCurrent().getPage().setLocation("/courses");
         });
-
+        buttons.add(create);
+        return buttons;
     }
 
-    private void createCourseFromForm(String courseTitle, LocalDate start, LocalDate end,/* TeacherDto teacher1,
-                                      TeacherDto teacher2,*/ String dayOfWeek, int price, LocalTime t,
-                                      int durValue, String desc) {
+    private HorizontalLayout createCourseForm() {
+        HorizontalLayout form = new HorizontalLayout(courseForm);
+        form.setSizeFull();
+        pricePerMonth.setSuffixComponent(new Span("PLN"));
+        description.setWidthFull();
+        duration.setSuffixComponent(new Span("min"));
 
-        CourseDto dto = new CourseDto(null, courseTitle,new ArrayList<>(), start, end, price, desc, durValue, dayOfWeek, t);
+        courseForm.add(title, startingDate, endDate, day, time, duration, pricePerMonth, description);
+        courseForm.setColspan(title, 3);
+        courseForm.setColspan(description, 3);
+
+        courseForm.setSizeFull();
+        form.add(courseForm);
+        return form;
+    }
+
+    private void createCourseFromForm(String courseTitle, LocalDate start, LocalDate end, String dayOfWeek,
+                                      int price, LocalTime t, int durValue, String desc) {
+
+        CourseDto dto = new CourseDto(null, courseTitle, new ArrayList<>(), start, end, price, desc, durValue, dayOfWeek, t);
         courseApiClient.createCourse(dto);
     }
 

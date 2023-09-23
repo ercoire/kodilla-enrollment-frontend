@@ -23,9 +23,11 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Route("course_edit/:courseId?")
@@ -41,13 +43,13 @@ public class CourseEditView extends VerticalLayout implements BeforeEnterObserve
 
     @Autowired
     private TeacherApiClient teacherApiClient;
+
     TextField title = new TextField("Title");
     ComboBox<TeacherDto> assignedTeacher1 = new ComboBox<>("Teacher1");
     ComboBox<TeacherDto> assignedTeacher2 = new ComboBox<>("Teacher2");
     DatePicker startingDate = new DatePicker("Starting Date");
     DatePicker endDate = new DatePicker("End Date");
     TextArea description = new TextArea("Description");
-
     TextField pricePerMonth = new TextField("Price");
     TextField duration = new TextField("Duration");
     ComboBox<String> day = new ComboBox<>("Day");
@@ -61,27 +63,28 @@ public class CourseEditView extends VerticalLayout implements BeforeEnterObserve
 
         assignedTeacher1.setAllowCustomValue(false);
         assignedTeacher2.setAllowCustomValue(false);
+        assignedTeacher1.setItemLabelGenerator(TeacherDto::getName);
+        assignedTeacher2.setItemLabelGenerator(TeacherDto::getName);
 
         pricePerMonth.setSuffixComponent(new Span("PLN"));
         description.setWidthFull();
         duration.setSuffixComponent(new Span("min"));
 
-        ComboBox<String> day = new ComboBox<>("Day");
-        TimePicker time = new TimePicker("Time");
-        //todo add payments
-        //todo add students
+        day.setItems(Arrays.stream(DayOfWeek.values())
+                .map(DayOfWeek::name)
+                .toList());
 
+        HorizontalLayout mainContent = createCourseForm();
+        HorizontalLayout saveChanges = submitCourseForm();
 
-        HorizontalLayout mainContent = new HorizontalLayout(courseForm);
-        mainContent.setSizeFull();
-        courseForm.add(title, startingDate, endDate, assignedTeacher1, assignedTeacher2, day, time, duration, description);
-        courseForm.setColspan(title, 3);
-        courseForm.setColspan(description, 3);
-
-        courseForm.setSizeFull();
 
         add(mainContent);
         add(courseForm);
+        add(saveChanges);
+    }
+
+    private HorizontalLayout submitCourseForm() {
+        HorizontalLayout submitChanges = new HorizontalLayout();
         Button submit = new Button("Submit changes");
 
         submit.addClickListener(event -> {
@@ -89,8 +92,12 @@ public class CourseEditView extends VerticalLayout implements BeforeEnterObserve
             TeacherDto teacher1 = assignedTeacher1.getValue();
             TeacherDto teacher2 = assignedTeacher2.getValue();
             List<TeacherDto> teachers = new ArrayList<>();
-            teachers.add(teacher1);
-            teachers.add(teacher2);
+            if (teacher1 != null) {
+                teachers.add(teacher1);
+            }
+            if (teacher2 != null) {
+                teachers.add(teacher2);
+            }
             LocalDate start = startingDate.getValue();
             LocalDate end = endDate.getValue();
             int price = Integer.parseInt(pricePerMonth.getValue());
@@ -103,10 +110,23 @@ public class CourseEditView extends VerticalLayout implements BeforeEnterObserve
             Notification n = new Notification("Course updated successfully");
             n.setPosition(Notification.Position.TOP_CENTER);
             n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-            n.open();
+            n.open(); //todo not working
             UI.getCurrent().getPage().setLocation("/courses");
         });
-        add(submit);
+
+        submitChanges.add(submit);
+        return submitChanges;
+    }
+
+    private HorizontalLayout createCourseForm() {
+        HorizontalLayout mainContent = new HorizontalLayout(courseForm);
+        mainContent.setSizeFull();
+        courseForm.add(title, startingDate, endDate, assignedTeacher1, assignedTeacher2, day, time, duration, pricePerMonth, description);
+        courseForm.setColspan(title, 3);
+        courseForm.setColspan(description, 3);
+
+        courseForm.setSizeFull();
+        return mainContent;
     }
 
     private void updateCourseFromForm(String courseTitle, List<TeacherDto> teachers, LocalDate start, LocalDate end,
@@ -121,22 +141,12 @@ public class CourseEditView extends VerticalLayout implements BeforeEnterObserve
         Long id = Long.parseLong(courseId);
         CourseDto course = courseApiClient.getCourse(id);
 
-//        ComboBox.ItemFilter<TeacherDto> teacher1Filter = (teacherName, filterString) -> teacherName
-//                .toString().toLowerCase().startsWith(filterString.toLowerCase());
-//
-//        ComboBox.ItemFilter<TeacherDto> teacher2Filter = (teacherName, filterString) -> teacherName
-//                .toString().toLowerCase().startsWith(filterString.toLowerCase());
         assignedTeacher1.setItems(allTeachers());
         assignedTeacher2.setItems(allTeachers());
         if (course.getAssignedTeachers().size() > 0) {
-
-//        assignedTeacher1.setItemLabelGenerator(TeacherDto::getName);
             assignedTeacher1.setValue(course.getAssignedTeachers().get(0));
         }
         if (course.getAssignedTeachers().size() > 1) {
-
-            assignedTeacher2.setRequired(false);
-//        assignedTeacher2.setItemLabelGenerator(TeacherDto::getName);
             assignedTeacher2.setValue(course.getAssignedTeachers().get(1));
         }
 
@@ -148,6 +158,7 @@ public class CourseEditView extends VerticalLayout implements BeforeEnterObserve
         description.setValue(course.getDescription());
         duration.setValue(String.valueOf(course.getDuration()));
         day.setValue(course.getDay());
+        time.setValue(course.getTime());
 
     }
 

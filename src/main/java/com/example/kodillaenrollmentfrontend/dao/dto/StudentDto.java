@@ -1,6 +1,7 @@
 package com.example.kodillaenrollmentfrontend.dao.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,8 +14,8 @@ public class StudentDto {
     //private String email;
 
 
-    @Override
-    public String toString() {
+    @JsonIgnore
+    public String getStudentName() {
         return firstname + " " + lastname;
     }
 }

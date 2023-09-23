@@ -33,13 +33,7 @@ public class StudentEditView extends VerticalLayout implements BeforeEnterObserv
 
     public StudentEditView() {
 
-
-        ComboBox<String> courseList = new ComboBox<>("Courses"); //todo String to Course?
-        ComboBox<String> payments = new ComboBox<>("Payments"); //todo String to Payment?
-        //todo add payment
-        //todo add course
-
-        studentForm.add(firstname, lastname,/*email,*/ courseList, payments);
+        studentForm.add(firstname, lastname/*, email*/);
 
         studentForm.setSizeFull();
 

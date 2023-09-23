@@ -6,13 +6,17 @@ import com.example.kodillaenrollmentfrontend.dao.apiclient.StudentApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.PaymentCreationDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.StudentDto;
+import com.example.kodillaenrollmentfrontend.views.MainView;
+import com.example.kodillaenrollmentfrontend.views.course.CourseEditView;
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
@@ -45,26 +49,28 @@ public class PaymentCreationView extends VerticalLayout {
     }
 
 
-    ComboBox<StudentDto> student = new ComboBox<>("Student name"); //todo name+lastname as String
+    ComboBox<StudentDto> student = new ComboBox<>("Student name");
     ComboBox<CourseDto> course = new ComboBox<>("Course title");
+    DatePicker paymentDate = new DatePicker("Payment date");
+    TextField amount = new TextField("Amount");
 
     public PaymentCreationView() {
 
-        DatePicker paymentDate = new DatePicker("Payment date");
+        student.setAutoOpen(true);
+        student.setItemLabelGenerator(StudentDto::getStudentName);
 
-        student.setAutoOpen(false);
-
-        TextField amount = new TextField("Amount");
         amount.setSuffixComponent(new Span("PLN"));
-
-
         paymentLayout.add(paymentDate, student, amount, course);
 
+        HorizontalLayout creation = createButtonLayout();
+
         add(paymentLayout);
+        add(creation);
+    }
 
+    private HorizontalLayout createButtonLayout() {
+        HorizontalLayout buttons = new HorizontalLayout();
         Button create = new Button("Create ");
-        add(create);
-
 
         create.addClickListener(event -> {
             LocalDate date = paymentDate.getValue();
@@ -78,8 +84,10 @@ public class PaymentCreationView extends VerticalLayout {
                 createPaymentFromForm(date, person, amt, dto);
                 Notification.show("Payment created successfully", 3000, Notification.Position.TOP_CENTER);
             }
-
+            UI.getCurrent().navigate(MainView.class);
         });
+        add(create);
+        return buttons;
     }
 
     private void createPaymentFromForm(LocalDate date, StudentDto person, String amt, CourseDto courseDto) {
@@ -95,7 +103,7 @@ public class PaymentCreationView extends VerticalLayout {
     protected void onAttach(AttachEvent attachEvent) {
         super.onAttach(attachEvent);
         ComboBox.ItemFilter<StudentDto> studentFilter = (studentName, filterString) -> studentName
-                .toString().toLowerCase().startsWith(filterString.toLowerCase());
+                .getStudentName().toLowerCase().startsWith(filterString.toLowerCase());
         course.setItemLabelGenerator(CourseDto::getTitle);
         student.setItems(studentFilter, allStudents());
         ComboBox.ItemFilter<CourseDto> courseFilter = (courseTitle, filterString) -> courseTitle

@@ -1,55 +1,72 @@
 package com.example.kodillaenrollmentfrontend.views;
 
-import com.example.kodillaenrollmentfrontend.views.course.CourseCreationView;
-import com.example.kodillaenrollmentfrontend.views.course.CourseEditView;
-import com.example.kodillaenrollmentfrontend.views.course.CourseView;
 import com.example.kodillaenrollmentfrontend.views.course.CoursesView;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.NativeLabel;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
+
+import java.awt.*;
 
 @Route
 public class MainView extends VerticalLayout {
 
     public MainView() {
-        add(new Button("Click me", e -> Notification.show("You have been rockrolled!")));
 
-        add(new NativeLabel("Welcome to the Main View"));
+        H1 title = new H1("Welcome to HAPPY STEPS!");
+        title.getStyle().set("font-size", "var(--lumo-font-size-xl)")
+                .set("margin", "0");
+
         //   add(new RouterLink("Admin", AdminView.class));
 
 
-        VerticalLayout courses = new VerticalLayout();
-        RouterLink coursesView = new RouterLink("CoursesView", CoursesView.class);
-        RouterLink courseView = new RouterLink("CourseView", CourseView.class);
-        RouterLink courseEditView = new RouterLink("CourseEditView", CourseEditView.class);
-        RouterLink courseCreationView = new RouterLink("CourseCreationView", CourseCreationView.class);
-        courses.add(coursesView, courseView, courseEditView, courseCreationView);
-//
-//        VerticalLayout teachers = new VerticalLayout();
-//        RouterLink teachersView = new RouterLink("TeachersView", TeachersView.class);
-//        RouterLink teacherView = new RouterLink("TeacherView", TeacherView.class);
-//        RouterLink teacherEditView = new RouterLink("TeacherEditView", TeacherEditView.class);
-//        RouterLink teacherCreationView = new RouterLink("TeacherCreationView", TeacherCreationView.class);
-//        teachers.add(teachersView, teacherView, teacherEditView, teacherCreationView);
-//
-//        VerticalLayout students = new VerticalLayout();
-//        RouterLink studentsView = new RouterLink("StudentsView", StudentsView.class);
-//        RouterLink studentView = new RouterLink("StudentView", StudentView.class);
-//        RouterLink studentEditView = new RouterLink("StudentEditView", StudentEditView.class);
-//        RouterLink studentCreationView = new RouterLink("StudentCreationView", StudentCreationView.class);
-//        students.add(studentsView, studentView, studentEditView, studentCreationView);
-//
-//        VerticalLayout payments = new VerticalLayout();
-//        RouterLink paymentCreationView = new RouterLink("PaymentCreationView", PaymentCreationView.class);
-//        payments.add(paymentCreationView);
+        Button courses = new Button("Courses");
+        courses.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        courses.addClickListener(event -> {
+            UI.getCurrent().getPage().setLocation("courses");
+        });
+
+        Button students = new Button("Students");
+        students.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        students.addClickListener(event -> {
+            UI.getCurrent().getPage().setLocation("students");
+        });
+
+        Button teachers = new Button("Teachers");
+        teachers.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        teachers.addClickListener(event -> {
+            UI.getCurrent().getPage().setLocation("teachers");
+        });
 
 
-//        HorizontalLayout main = new HorizontalLayout();
-//        main.add(teachers, courses /*, students, payments*/);
-//
-//        add(main);
+        Button payments = new Button("Payments");
+        payments.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        payments.addClickListener(event -> {
+            UI.getCurrent().getPage().setLocation("payment_create");
+        });
+
+        HorizontalLayout main = new HorizontalLayout();
+        main.add(teachers, courses, students, payments);
+
+        Span name = new Span("Sophia Williams");
+        Span email = new Span("sophia.williams@company.com");
+        Span copyrights = new Span("Ⓒ Katarzyna Gierasimczuk 2023");
+        VerticalLayout footer = new VerticalLayout(name,
+                email, copyrights);
+        footer.setSpacing(false);
+        footer.setPadding(false);
+
+
+        add(title);
+        add(main);
+        add(footer);
+       // add(new Button("Click me", e -> Notification.show("You have been rickrolled!")));
     }
 }

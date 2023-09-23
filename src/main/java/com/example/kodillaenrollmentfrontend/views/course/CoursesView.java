@@ -7,6 +7,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -25,28 +26,39 @@ public class CoursesView extends VerticalLayout {
     private final Grid<CourseDto> grid = new Grid<>(CourseDto.class);
 
     public CoursesView() {
-        add(new NativeLabel("Your courses here!"));  //todo native label justified
+        H1 title = new H1("See all courses here");
+        title.getStyle().set("font-size", "var(--lumo-font-size-m)")
+                .set("margin", "0");
 
-        HorizontalLayout functions = new HorizontalLayout();
-        Button create = new Button("Create new");
-        Button export = new Button("Export to GoogleSheets");  //todo
+        HorizontalLayout functions = createButtonsLayout();
+        HorizontalLayout gridView = createGridLayout();
 
-        functions.add(create, export);
+        add(title);
         add(functions);
-
-        HorizontalLayout gridView = new HorizontalLayout();
-        gridView.setSizeFull();
-        gridView.add(grid);
-        grid.setColumns("title", "assignedTeachers", "startingDate", "endDate", "pricePerMonth",
-                "description", "duration", "day", "time");
-        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
-        grid.setAllRowsVisible(true);
         add(gridView);
+    }
 
+    private HorizontalLayout createButtonsLayout() {
+        HorizontalLayout buttons = new HorizontalLayout();
+        Button create = new Button("Create new");
         create.addClickListener(event -> {
             UI.getCurrent().getPage().setLocation("/course_create");
-            ;
+
         });
+        Button export = new Button("Export to GoogleSheets");  //todo
+
+        buttons.add(create, export);
+        return buttons;
+    }
+
+    private HorizontalLayout createGridLayout() {
+        HorizontalLayout gridView = new HorizontalLayout();
+        gridView.setSizeFull();
+        grid.setColumns("title", "teacherNames", "startingDate", "endDate", "pricePerMonth",
+                "description", "duration", "day", "time");
+
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+        grid.setAllRowsVisible(true);
 
         grid.addItemClickListener(event -> {
             Long clickedCourseId = event.getItem().getId();
@@ -54,8 +66,10 @@ public class CoursesView extends VerticalLayout {
                     "courseId", clickedCourseId.toString()
             )));
         });
-
+        gridView.add(grid);
+        return gridView;
     }
+
 
     @Override
     protected void onAttach(AttachEvent attachEvent) {
