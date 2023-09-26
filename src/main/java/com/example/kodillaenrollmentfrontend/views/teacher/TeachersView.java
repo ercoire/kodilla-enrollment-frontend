@@ -2,6 +2,7 @@ package com.example.kodillaenrollmentfrontend.views.teacher;
 
 import com.example.kodillaenrollmentfrontend.dao.apiclient.TeacherApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.TeacherDto;
+import com.example.kodillaenrollmentfrontend.views.MainView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -9,7 +10,6 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
@@ -17,9 +17,6 @@ import com.vaadin.flow.router.RouteParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
-
-import static com.vaadin.flow.dom.Style.TextAlign.CENTER;
-import static com.vaadin.flow.dom.Style.TextAlign.JUSTIFY;
 
 
 @Route("teachers")
@@ -37,9 +34,10 @@ public class TeachersView extends VerticalLayout {
 
         HorizontalLayout functions = new HorizontalLayout();
         Button create = new Button("Create new");
-        Button export = new Button("Export to GoogleSheets");  //todo
+        Button backToMain = new Button("Main menu");
+        backToMain.addClickListener(event -> UI.getCurrent().navigate(MainView.class));
 
-        functions.add(create, export);
+        functions.add(create, backToMain);
 
         grid.addColumn(TeacherDto::getFirstname).setHeader("First name").setSortable(true);
         grid.addColumn(TeacherDto::getLastname).setHeader("Last name").setSortable(true);
@@ -50,9 +48,7 @@ public class TeachersView extends VerticalLayout {
         gridContainer.setSizeFull();
 
 
-        create.addClickListener(event -> {
-            UI.getCurrent().getPage().setLocation("/teacher_create");
-        });
+        create.addClickListener(event -> UI.getCurrent().getPage().setLocation("/teacher_create"));
 
         grid.addItemClickListener(event -> {
             Long clickedTeacherId = event.getItem().getId();

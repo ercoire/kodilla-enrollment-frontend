@@ -2,13 +2,14 @@ package com.example.kodillaenrollmentfrontend.views.student;
 
 import com.example.kodillaenrollmentfrontend.dao.apiclient.StudentApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.StudentDto;
+import com.example.kodillaenrollmentfrontend.views.MainView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -33,32 +34,42 @@ public class StudentEditView extends VerticalLayout implements BeforeEnterObserv
 
     public StudentEditView() {
 
-        studentForm.add(firstname, lastname/*, email*/);
-
+        studentForm.add(firstname, lastname, email);
         studentForm.setSizeFull();
 
+        HorizontalLayout save = createSubmitLayout();
+
         add(studentForm);
+        add(save);
+    }
+
+    private HorizontalLayout createSubmitLayout() {
+        HorizontalLayout save = new HorizontalLayout();
+
         Button submit = new Button("Submit changes");
         submit.addClickListener(event -> {
             String first = firstname.getValue();
             String last = lastname.getValue();
-            //  String mail = description.getValue();
-            updateStudentFromForm(first, last);
+            String mail = email.getValue();
+            updateStudentFromForm(first, last, mail);
 
             Notification n = new Notification("Student updated successfully");
             n.setPosition(Notification.Position.TOP_CENTER);
             n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             n.setDuration(5000);
             n.open();
-            //todo notification not shown
             UI.getCurrent().getPage().setLocation("/students");
         });
 
-        add(submit);
+        Button backToMain = new Button("Main menu");
+        backToMain.addClickListener(event -> UI.getCurrent().navigate(MainView.class));
+
+        save.add(submit, backToMain);
+        return save;
     }
 
-    private void updateStudentFromForm(String first, String last) {
-        StudentDto dto = new StudentDto(Long.parseLong(studentId), first, last);
+    private void updateStudentFromForm(String first, String last, String email) {
+        StudentDto dto = new StudentDto(Long.parseLong(studentId), first, last, email);
         studentApiClient.updateStudent(dto);
     }
 
@@ -68,6 +79,7 @@ public class StudentEditView extends VerticalLayout implements BeforeEnterObserv
         StudentDto studentDto = studentApiClient.getStudent(id);
         firstname.setValue(studentDto.getFirstname());
         lastname.setValue(studentDto.getLastname());
+        email.setValue(studentDto.getEmail());
     }
 
     @Override

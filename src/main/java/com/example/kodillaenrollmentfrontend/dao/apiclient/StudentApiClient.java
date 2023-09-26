@@ -3,12 +3,14 @@ package com.example.kodillaenrollmentfrontend.dao.apiclient;
 import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.PaymentDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.StudentDto;
+import com.example.kodillaenrollmentfrontend.dao.dto.WsdcInfoDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StudentApiClient {
@@ -61,4 +63,9 @@ public class StudentApiClient {
                 .toEntityList(PaymentDto.class).block().getBody();
     }
 
+    public Optional<WsdcInfoDto> getWsdcInfo(Long studentId) {
+        return Optional.ofNullable(webClient.get().uri("/v1/students/{studentId}/wsdc-info", studentId)
+                .retrieve()
+                .toEntity(WsdcInfoDto.class).block().getBody());
+    }
 }

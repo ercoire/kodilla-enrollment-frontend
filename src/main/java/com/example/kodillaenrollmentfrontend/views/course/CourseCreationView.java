@@ -2,6 +2,7 @@ package com.example.kodillaenrollmentfrontend.views.course;
 
 import com.example.kodillaenrollmentfrontend.dao.apiclient.CourseApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
+import com.example.kodillaenrollmentfrontend.views.MainView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -23,6 +24,8 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+
+import static com.vaadin.flow.component.notification.Notification.Position.TOP_CENTER;
 
 @Route("course_create")
 public class CourseCreationView extends VerticalLayout {
@@ -68,12 +71,16 @@ public class CourseCreationView extends VerticalLayout {
 
             createCourseFromForm(courseTitle, start, end, dayOfWeek, price, t, durValue, desc);
             Notification n = new Notification("Course created successfully");
-            n.setPosition(Notification.Position.TOP_CENTER);
+            n.setDuration(10000);
+            n.setPosition(TOP_CENTER);
+            n.open();
             n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-            n.setDuration(20000);
-            n.open();  //todo doesn't work
             UI.getCurrent().getPage().setLocation("/courses");
         });
+        Button backToMain = new Button("Main menu");
+        backToMain.addClickListener(event -> UI.getCurrent().navigate(MainView.class));
+
+        buttons.add(backToMain);
         buttons.add(create);
         return buttons;
     }

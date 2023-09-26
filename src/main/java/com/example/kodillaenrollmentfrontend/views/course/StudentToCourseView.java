@@ -4,6 +4,7 @@ import com.example.kodillaenrollmentfrontend.dao.apiclient.CourseApiClient;
 import com.example.kodillaenrollmentfrontend.dao.apiclient.StudentApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.StudentDto;
+import com.example.kodillaenrollmentfrontend.views.MainView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -86,13 +87,16 @@ public class StudentToCourseView extends VerticalLayout implements BeforeEnterOb
         });
 
         Button toCourse = new Button("Back to course");
-        toCourse.addClickListener(event -> {
-            UI.getCurrent().navigate(CourseView.class, new RouteParameters("courseId", courseId));
-        });
+        toCourse.addClickListener(event -> UI.getCurrent().navigate(CourseView.class,
+                new RouteParameters("courseId", courseId)));
+
+        Button backToMain = new Button("Main menu");
+        backToMain.addClickListener(event -> UI.getCurrent().navigate(MainView.class));
 
         functions.add(repeat);
         functions.add(submit);
         functions.add(toCourse);
+        functions.add(backToMain);
         return functions;
     }
 

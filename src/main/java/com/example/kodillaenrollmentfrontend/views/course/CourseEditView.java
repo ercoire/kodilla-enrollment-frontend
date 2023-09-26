@@ -4,6 +4,7 @@ import com.example.kodillaenrollmentfrontend.dao.apiclient.CourseApiClient;
 import com.example.kodillaenrollmentfrontend.dao.apiclient.TeacherApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.TeacherDto;
+import com.example.kodillaenrollmentfrontend.views.MainView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -29,6 +30,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.vaadin.flow.component.notification.Notification.Position.TOP_CENTER;
 
 @Route("course_edit/:courseId?")
 public class CourseEditView extends VerticalLayout implements BeforeEnterObserver {
@@ -108,13 +111,17 @@ public class CourseEditView extends VerticalLayout implements BeforeEnterObserve
             updateCourseFromForm(courseTitle, teachers, start, end, price, desc, dur, d, hour);
 
             Notification n = new Notification("Course updated successfully");
-            n.setPosition(Notification.Position.TOP_CENTER);
+            n.setPosition(TOP_CENTER);
+            n.setDuration(5000);
             n.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-            n.open(); //todo not working
             UI.getCurrent().getPage().setLocation("/courses");
+            n.open();
         });
+        Button backToMain = new Button("Main menu");
+        backToMain.addClickListener(event -> UI.getCurrent().navigate(MainView.class));
 
-        submitChanges.add(submit);
+
+        submitChanges.add(submit, backToMain);
         return submitChanges;
     }
 

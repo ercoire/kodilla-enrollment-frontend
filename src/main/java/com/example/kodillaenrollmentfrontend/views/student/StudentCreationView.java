@@ -2,6 +2,7 @@ package com.example.kodillaenrollmentfrontend.views.student;
 
 import com.example.kodillaenrollmentfrontend.dao.apiclient.StudentApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.StudentDto;
+import com.example.kodillaenrollmentfrontend.views.MainView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -31,8 +32,9 @@ public class StudentCreationView extends VerticalLayout {
 
         firstname.setRequired(true);
         lastname.setRequired(true);
+        email.setRequired(true);
 
-        studentForm.add(firstname, lastname /*, email*/);
+        studentForm.add(firstname, lastname , email);
         studentForm.setSizeFull();
 
         HorizontalLayout buttons = createButtonsLayout();
@@ -49,26 +51,30 @@ public class StudentCreationView extends VerticalLayout {
         create.addClickListener(event -> {
             String first = firstname.getValue();
             String last = lastname.getValue();
-            //   String mail = email.getValue();
+            String mail = email.getValue();
 
-            if (first == null || last == null || first.equals("") || last.equals("")) {
-                Notification fail = new Notification("Please fill in all required fields");
+            if (first == null || last == null || first.equals("") || last.equals("") || mail.equals("")) {
+                Notification fail = new Notification();
+                fail.setText("Please fill in all required fields");
                 fail.setDuration(3000);
                 fail.setPosition(Notification.Position.TOP_CENTER);
                 fail.addThemeVariants(NotificationVariant.LUMO_WARNING);
-                fail.open();  //todo does not open
+                fail.open();
             } else {
-                createStudent(first, last/*, mail*/);
+                createStudent(first, last, mail);
                 UI.getCurrent().getPage().setLocation("/students");
             }
         });
 
-        add(create);
+        Button backToMain = new Button("Main menu");
+        backToMain.addClickListener(event -> UI.getCurrent().navigate(MainView.class));
+
+        functions.add(create, backToMain);
         return functions;
     }
 
-    private void createStudent(String firstname, String lastname /*, String mail*/) {
-        StudentDto dto = new StudentDto(null, firstname, lastname/*, mail*/);
+    private void createStudent(String firstname, String lastname, String mail) {
+        StudentDto dto = new StudentDto(null, firstname, lastname, mail);
         studentApiClient.createStudent(dto);
     }
 }

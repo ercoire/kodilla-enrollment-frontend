@@ -4,6 +4,7 @@ import com.example.kodillaenrollmentfrontend.dao.apiclient.CourseApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.PaymentDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.StudentDto;
+import com.example.kodillaenrollmentfrontend.views.MainView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -67,14 +68,11 @@ public class CourseView extends VerticalLayout implements BeforeEnterObserver {
         HorizontalLayout functions = new HorizontalLayout();
 
         Button create = new Button("Create new");
-        create.addClickListener(event -> {
-            UI.getCurrent().getPage().setLocation("/course_create");
-        });
+        create.addClickListener(event -> UI.getCurrent().getPage().setLocation("/course_create"));
 
         Button edit = new Button("Edit");
-        edit.addClickListener(event -> {
-            UI.getCurrent().navigate(CourseEditView.class, new RouteParameters("courseId", courseId));
-        });
+        edit.addClickListener(event -> UI.getCurrent().navigate(CourseEditView.class,
+                new RouteParameters("courseId", courseId)));
 
         Button delete = new Button("Delete");
         delete.addClickListener(event -> {
@@ -84,23 +82,20 @@ public class CourseView extends VerticalLayout implements BeforeEnterObserver {
         });
 
         Button showPayments = new Button("Show payment list");
-        showPayments.addClickListener(event -> {
-            paymentGrid.setVisible(!paymentGrid.isVisible());
-        });
+        showPayments.addClickListener(event -> paymentGrid.setVisible(!paymentGrid.isVisible()));
 
         Button showStudents = new Button("Show students");
-        showStudents.addClickListener(event -> {
-            studentGrid.setVisible(!studentGrid.isVisible());
-        });
+        showStudents.addClickListener(event -> studentGrid.setVisible(!studentGrid.isVisible()));
 
         Button addStudent = new Button("Add Student");
-        addStudent.addClickListener(event -> {
-            UI.getCurrent().navigate(StudentToCourseView.class, new RouteParameters("courseId", courseId));
-        });
+        addStudent.addClickListener(event -> UI.getCurrent().navigate(StudentToCourseView.class,
+                new RouteParameters("courseId", courseId)));
 
-        Button export = new Button("Export to Google Sheets"); //todo
 
-        functions.add(edit, delete, create, showPayments, showStudents, addStudent, export);
+        Button backToMain = new Button("Main menu");
+        backToMain.addClickListener(event -> UI.getCurrent().navigate(MainView.class));
+
+        functions.add(edit, delete, create, showPayments, showStudents, addStudent, backToMain);
         return functions;
     }
 

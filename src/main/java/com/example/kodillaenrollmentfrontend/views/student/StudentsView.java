@@ -2,15 +2,13 @@ package com.example.kodillaenrollmentfrontend.views.student;
 
 import com.example.kodillaenrollmentfrontend.dao.apiclient.StudentApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.StudentDto;
-import com.example.kodillaenrollmentfrontend.views.course.CourseView;
+import com.example.kodillaenrollmentfrontend.views.MainView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.charts.model.style.Style;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
@@ -46,7 +44,7 @@ public class StudentsView extends VerticalLayout {
         HorizontalLayout gridView = new HorizontalLayout();
         gridView.setSizeFull();
         gridView.add(grid);
-        grid.setColumns("firstname", "lastname" /*, "email"*/);
+        grid.setColumns("firstname", "lastname", "email");
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
         grid.setAllRowsVisible(true);
 
@@ -63,13 +61,12 @@ public class StudentsView extends VerticalLayout {
     private HorizontalLayout createButtonsLayout() {
         HorizontalLayout functions = new HorizontalLayout();
         Button create = new Button("Create new");
-        create.addClickListener(event -> {
-            UI.getCurrent().navigate(StudentCreationView.class);
-        });
+        create.addClickListener(event -> UI.getCurrent().navigate(StudentCreationView.class));
 
-        Button export = new Button("Export to GoogleSheets");  //todo
+        Button backToMain = new Button("Main menu");
+        backToMain.addClickListener(event -> UI.getCurrent().navigate(MainView.class));
 
-        functions.add(create, export);
+        functions.add(create, backToMain);
         add(functions);
         return functions;
     }

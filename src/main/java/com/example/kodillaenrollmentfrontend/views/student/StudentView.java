@@ -5,6 +5,8 @@ import com.example.kodillaenrollmentfrontend.dao.apiclient.StudentApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.PaymentDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.StudentDto;
+import com.example.kodillaenrollmentfrontend.dao.dto.WsdcInfoDto;
+import com.example.kodillaenrollmentfrontend.views.MainView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -23,7 +25,10 @@ import com.vaadin.flow.router.RouteParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.vaadin.flow.component.notification.Notification.Position.TOP_CENTER;
 
 @Route("student-details/:studentId")
 public class StudentView extends VerticalLayout implements BeforeEnterObserver {
@@ -39,7 +44,7 @@ public class StudentView extends VerticalLayout implements BeforeEnterObserver {
 
     TextField firstname = new TextField("First name");
     TextField lastname = new TextField("Last name");
-    //  EmailField email = new EmailField("Email");
+    TextField email = new TextField("Email");
 
     private final Grid<CourseDto> courseGrid = new Grid<>(CourseDto.class, false);
     private final Grid<PaymentDto> paymentGrid = new Grid<>(PaymentDto.class, false);
@@ -64,34 +69,42 @@ public class StudentView extends VerticalLayout implements BeforeEnterObserver {
 
         add(new NativeLabel("Choose a button to edit, delete or export your student"));
         Button create = new Button("Create new");
-        create.addClickListener(event -> {
-            UI.getCurrent().getPage().setLocation("/student_create");
-        });
+        create.addClickListener(event -> UI.getCurrent().getPage().setLocation("/student_create"));
 
         Button edit = new Button("Edit");
-        edit.addClickListener(event -> {
-            UI.getCurrent().navigate(StudentEditView.class, new RouteParameters("studentId", studentId));
-        });
+        edit.addClickListener(event -> UI.getCurrent().navigate(StudentEditView.class, new RouteParameters("studentId", studentId)));
 
-        Button delete = new Button("Delete");  //todo not working at all!
+        Button delete = new Button("Delete");
         delete.addClickListener(event -> {
             deleteStudentById(Long.valueOf(studentId));
-            add(Notification.show("Student deleted successfully!"));
-            //todo notification not working
             UI.getCurrent().getPage().setLocation("/students");
         });
 
         Button showCourses = new Button("Show courses");
-        showCourses.addClickListener(event -> {
-            courseGrid.setVisible(!courseGrid.isVisible());
+        showCourses.addClickListener(event -> courseGrid.setVisible(!courseGrid.isVisible()));
+
+        Button wsdcStatus = new Button("Check WSDC division");
+        wsdcStatus.addClickListener(event -> {
+            Optional<WsdcInfoDto> info = studentApiClient.getWsdcInfo(Long.valueOf(studentId));
+            Notification n = new Notification();
+            n.setPosition(TOP_CENTER);
+            n.setDuration(3000);
+            n.open();
+            if (info.isPresent()) {
+                n.setText(info.get().getLevel());
+            } else {
+                n.setText("No information available");
+            }
         });
 
         Button showPayments = new Button("Show payment list");
-        showPayments.addClickListener(event -> {
-            paymentGrid.setVisible(!paymentGrid.isVisible());
-        });
+        showPayments.addClickListener(event -> paymentGrid.setVisible(!paymentGrid.isVisible()));
 
-        functions.add(edit, delete, create, showCourses, showPayments);
+        Button backToMain = new Button("Main menu");
+        backToMain.addClickListener(event -> UI.getCurrent().navigate(MainView.class));
+
+
+        functions.add(wsdcStatus, edit, delete, create, showCourses, showPayments, backToMain);
         return functions;
     }
 
@@ -100,8 +113,8 @@ public class StudentView extends VerticalLayout implements BeforeEnterObserver {
         mainContent.setSizeFull();
         firstname.setReadOnly(true);
         lastname.setReadOnly(true);
-        //   email.setReadOnly(true);
-        studentForm.add(firstname, lastname/*, email*/);
+        email.setReadOnly(true);
+        studentForm.add(firstname, lastname, email);
         studentForm.setSizeFull();
         return mainContent;
     }
@@ -119,7 +132,6 @@ public class StudentView extends VerticalLayout implements BeforeEnterObserver {
         courseGrid.addColumn(CourseDto::getTime).setHeader("Time").setSortable(true);
         courseGrid.addColumn(CourseDto::getTeacherNames).setHeader("Teachers").setSortable(true);
         courseGrid.setSizeFull();
-        //    courseGrid.setColumnRendering(ColumnRendering.LAZY);
         courseGrid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
         courseGrid.setAllRowsVisible(true);
         courseGrid.setVisible(false);
@@ -153,6 +165,7 @@ public class StudentView extends VerticalLayout implements BeforeEnterObserver {
         StudentDto retrieved = studentApiClient.getStudent(id);
         firstname.setValue(retrieved.getFirstname());
         lastname.setValue(retrieved.getLastname());
+        email.setValue(retrieved.getEmail());
 
         coursesToTitles = courseApiClient.getCourses().stream()
                 .collect(Collectors.toMap(CourseDto::getId, CourseDto::getTitle));

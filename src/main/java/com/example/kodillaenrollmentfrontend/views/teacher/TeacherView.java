@@ -3,6 +3,7 @@ package com.example.kodillaenrollmentfrontend.views.teacher;
 import com.example.kodillaenrollmentfrontend.dao.apiclient.TeacherApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.TeacherDto;
+import com.example.kodillaenrollmentfrontend.views.MainView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -67,14 +68,11 @@ public class TeacherView extends VerticalLayout implements BeforeEnterObserver {
         HorizontalLayout functions = new HorizontalLayout();
 
         Button create = new Button("Create new");
-        create.addClickListener(event -> {
-            UI.getCurrent().getPage().setLocation("/teacher_create");
-        });
+        create.addClickListener(event -> UI.getCurrent().getPage().setLocation("/teacher_create"));
 
         Button edit = new Button("Edit");
-        edit.addClickListener(event -> {
-            UI.getCurrent().navigate(TeacherEditView.class, new RouteParameters("teacherId", teacherId));
-        });
+        edit.addClickListener(event -> UI.getCurrent().navigate(TeacherEditView.class,
+                new RouteParameters("teacherId", teacherId)));
 
         Button delete = new Button("Delete");
         delete.addClickListener(event -> {
@@ -84,17 +82,14 @@ public class TeacherView extends VerticalLayout implements BeforeEnterObserver {
         });
 
         Button showCourses = new Button("Show Courses");
-        showCourses.addClickListener(event -> {
-        courseGrid.setVisible(!courseGrid.isVisible());
-        });
-
-        Button export = new Button("Open in Google Sheets");  //todo add export
-        create.addClickListener(event -> {
-            UI.getCurrent().getPage().setLocation("/teacher_create");
-        });
+        showCourses.addClickListener(event -> courseGrid.setVisible(!courseGrid.isVisible()));
 
 
-        functions.add(edit, delete, create, showCourses, export);
+        Button backToMain = new Button("Main menu");
+        backToMain.addClickListener(event -> UI.getCurrent().navigate(MainView.class));
+
+
+        functions.add(edit, delete, create, showCourses, backToMain);
         return functions;
     }
 

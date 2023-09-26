@@ -2,6 +2,7 @@ package com.example.kodillaenrollmentfrontend.views.teacher;
 
 import com.example.kodillaenrollmentfrontend.dao.apiclient.TeacherApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.TeacherDto;
+import com.example.kodillaenrollmentfrontend.views.MainView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -43,11 +44,11 @@ public class TeacherCreationView extends VerticalLayout {
         success.setDuration(10000);
         success.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 
-        HorizontalLayout creation = submitTeacherForm();
+        HorizontalLayout creation = createTeacherForm();
         add(creation);
     }
 
-    private HorizontalLayout submitTeacherForm() {
+    private HorizontalLayout createTeacherForm() {
         HorizontalLayout submitForm = new HorizontalLayout();
         Button create = new Button("Create ");
         add(create);
@@ -65,7 +66,12 @@ public class TeacherCreationView extends VerticalLayout {
                 UI.getCurrent().getPage().setLocation("/teachers");
             }
         });
+
+        Button backToMain = new Button("Main menu");
+        backToMain.addClickListener(event -> UI.getCurrent().navigate(MainView.class));
+
         submitForm.add(create);
+        submitForm.add(backToMain);
         return submitForm;
     }
 

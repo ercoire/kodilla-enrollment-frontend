@@ -2,13 +2,13 @@ package com.example.kodillaenrollmentfrontend.views.course;
 
 import com.example.kodillaenrollmentfrontend.dao.apiclient.CourseApiClient;
 import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
+import com.example.kodillaenrollmentfrontend.views.MainView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.NativeLabel;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
@@ -41,13 +41,15 @@ public class CoursesView extends VerticalLayout {
     private HorizontalLayout createButtonsLayout() {
         HorizontalLayout buttons = new HorizontalLayout();
         Button create = new Button("Create new");
-        create.addClickListener(event -> {
-            UI.getCurrent().getPage().setLocation("/course_create");
+        create.addClickListener(event -> UI.getCurrent().getPage().setLocation("/course_create"));
 
-        });
-        Button export = new Button("Export to GoogleSheets");  //todo
+        Button backToMain = new Button("Main menu");
+        backToMain.addClickListener(event -> UI.getCurrent().navigate(MainView.class));
 
-        buttons.add(create, export);
+
+        buttons.add(backToMain);
+
+        buttons.add(create);
         return buttons;
     }
 

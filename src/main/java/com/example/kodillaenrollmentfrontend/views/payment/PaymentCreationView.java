@@ -7,7 +7,6 @@ import com.example.kodillaenrollmentfrontend.dao.dto.CourseDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.PaymentCreationDto;
 import com.example.kodillaenrollmentfrontend.dao.dto.StudentDto;
 import com.example.kodillaenrollmentfrontend.views.MainView;
-import com.example.kodillaenrollmentfrontend.views.course.CourseEditView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -86,7 +85,12 @@ public class PaymentCreationView extends VerticalLayout {
             }
             UI.getCurrent().navigate(MainView.class);
         });
-        add(create);
+
+        Button backToMain = new Button("Main menu");
+        backToMain.addClickListener(event -> UI.getCurrent().navigate(MainView.class));
+
+        buttons.add(create);
+        buttons.add(backToMain);
         return buttons;
     }
 
